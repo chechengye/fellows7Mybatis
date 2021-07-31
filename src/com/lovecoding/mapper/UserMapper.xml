@@ -6,11 +6,24 @@
     namespace : 就是用来匹配查询对应的接口的
     元素标签 ： 中的id属性 是与 对应接口中的方法名称保持一致。而且唯一 。
     resultType ： 返回实体对象的全路径
+    parameterType : 实体对象类型支持 获取对象中的值的时候，直接获取其内属性
 -->
 <mapper namespace="com.lovecoding.mapper.UserMapper">
 
-    <select id="getAllUser" resultType="com.lovecoding.pojo.UmsUser">
+    <select id="getAllUser" resultType="UmsUser">
         SELECT u.id , u.name from ums_user u
+    </select>
+
+    <insert id="addUser" parameterType="UmsUser">
+        insert into ums_user(name , username , password ) VALUES ( #{name} , #{username} , #{password})
+    </insert>
+
+    <select id="getUsersByQueryVo" parameterType="QueryVo" resultType="UmsUser">
+          select * from ums_user u where u.name like "%"#{umsUser.name}"%"
+    </select>
+
+    <select id="getUserByUserNameAndPassword" resultType="UmsUser">
+        SELECT u.id , u.name from ums_user u where u.username = #{username} and u.password = #{password}
     </select>
 
 </mapper>

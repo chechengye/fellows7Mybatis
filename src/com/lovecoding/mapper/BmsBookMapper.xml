@@ -14,12 +14,30 @@
            读值 - 推荐
     ${} :  底层使用是Statement，支持字符串拼接的。 直接将传递的值，直接显示 。比如SQL关键字动态拼接的时间 可能/可以使用它
 
+    若数据库字段与实体类中字段/属性不一致时，两种解决方法
+    1、给字段起别名
+    2、可以使用resultMap
+           对象中简单属性情况下，匹配的字段可以只写需要手动映射的。但是若它其中包含复杂的属性类型，就要全补上。
 
  -->
 <mapper namespace="com.lovecoding.mapper.BmsBookMapper">
 
-    <delete id="deleteBookById" parameterType="java.lang.Integer">
-        delete from bms_book where id = 1
+    <resultMap id="Base_Book_Case" type="BmsBook">
+        <!--javaType="Integer" jdbcType="Integer"-->
+        <id column="id" property="id" ></id>
+        <result column="book_name" property="bookName" javaType="String" jdbcType="VARCHAR"></result>
+        <result column="book_author" property="bookAuthor"/>
+        <result property="bookPrice" column="book_price"></result>
+
+    </resultMap>
+
+
+
+    <delete id="deleteBookById" parameterType="Integer">
+        delete from bms_book where id = #{id}
     </delete>
 
+    <select id="getBookById" resultMap="Base_Book_Case" parameterType="Integer">
+        select *  from bms_book  bb where id = #{id}
+    </select>
 </mapper>
