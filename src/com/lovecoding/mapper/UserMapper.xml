@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace : 就是用来匹配查询对应的接口的
+    元素标签 ： 中的id属性 是与 对应接口中的方法名称保持一致。而且唯一 。
+    resultType ： 返回实体对象的全路径
+-->
+<mapper namespace="com.lovecoding.mapper.UserMapper">
+
+    <select id="getAllUser" resultType="com.lovecoding.pojo.UmsUser">
+        SELECT u.id , u.name from ums_user u
+    </select>
+
+</mapper>

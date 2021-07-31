@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    namespace : 就是用来匹配查询对应的接口的
+    元素标签 ： 中的id属性 是与 对应接口中的方法名称保持一致。而且唯一 。
+    resultType ： 返回实体对象的全路径 - select标签独有的
+    delete 、 update 、insert都没有返回值 。默认给你返回一个受影响行数
+    parameterType : 接收相关参数
+
+    若只有一个入参。#{name} - name名称可以任意
+    #{} ： 底层实现使用的是PreparedStatement - 真正做到防止SQL注入 。会默认给传入的值带上引号
+           读值 - 推荐
+    ${} :  底层使用是Statement，支持字符串拼接的。 直接将传递的值，直接显示 。比如SQL关键字动态拼接的时间 可能/可以使用它
+
+
+ -->
+<mapper namespace="com.lovecoding.mapper.BmsBookMapper">
+
+    <delete id="deleteBookById" parameterType="java.lang.Integer">
+        delete from bms_book where id = 1
+    </delete>
+
+</mapper>
