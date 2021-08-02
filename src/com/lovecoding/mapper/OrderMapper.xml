@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lovecoding.mapper.OrderMapper">
+    <sql id="Base_OrderAndUser_Column">
+        oo.oid , oo.ono , oo.total_amount totalAmount, uu.name ,uu.id , uu.username
+    </sql>
+    <select id="getOrderList" resultType="OrderAndUser">
+        SELECT
+        <include refid="Base_OrderAndUser_Column"/>
+        from oms_order oo , ums_user uu where oo.user_id = uu.id
+    </select>
+    <resultMap id="Base_Order_Map" type="Order">
+        <id column="oid" property="oid" ></id>
+        <result column="totalAmount" property="totalAmount"></result>
+        <result column="ono" property="ono"></result>
+        <!--封装实体类中包含对象的 <association> 不再会自动映射了，需要获取的列必须显示的写出-->
+        <association property="umsUser" javaType="UmsUser">
+            <id column="id" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="username" property="username"></result>
+        </association>
+    </resultMap>
+    <select id="getOrderList1" resultMap="Base_Order_Map">
+        SELECT
+        <include refid="Base_OrderAndUser_Column"/>
+        from oms_order oo , ums_user uu where oo.user_id = uu.id
+    </select>
+</mapper>

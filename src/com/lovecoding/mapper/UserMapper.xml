@@ -10,6 +10,12 @@
 -->
 <mapper namespace="com.lovecoding.mapper.UserMapper">
 
+    <!--
+        自定义的sql标签，封装SQL语句中重复出现语句
+    -->
+    <sql id="Base_UmsUser_Column">
+        u.id, u.name ,u.sex
+    </sql>
     <select id="getAllUser" resultType="UmsUser">
         SELECT u.id , u.name from ums_user u
     </select>
@@ -19,11 +25,98 @@
     </insert>
 
     <select id="getUsersByQueryVo" parameterType="QueryVo" resultType="UmsUser">
-          select * from ums_user u where u.name like "%"#{umsUser.name}"%"
+          select
+          <include refid="Base_UmsUser_Column"/>
+          from ums_user u where u.name like "%"#{umsUser.name}"%"
     </select>
 
     <select id="getUserByUserNameAndPassword" resultType="UmsUser">
         SELECT u.id , u.name from ums_user u where u.username = #{username} and u.password = #{password}
     </select>
 
+    <select id="getUsersByNameAndSex" resultType="UmsUser">
+        SELECT
+        <include refid="Base_UmsUser_Column"/>
+        from ums_user u
+        <!--默认加上where关键字，和去除第一个前and  。 不能去除最后一个and -->
+        <where>
+            <!--
+            能帮我们添加前关键字与，覆盖多余关键字。
+            <trim suffix="where" suffixOverrides="and">
+
+            </trim>-->
+            <!--<if test >中可以不需要通过#{} ${}即可获取到参数的值 -->
+            <if test='name != null and name != ""'>
+                and u.name like "%"#{name}"%"
+            </if>
+            <if test='sex != null'>
+                and sex = #{sex}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getUsersByIds" resultType="UmsUser">
+        SELECT
+        <include refid="Base_UmsUser_Column"/>
+        from ums_user u
+        <!--<foreach collection> 用来接收集合数据的 list array 或者拼接  (2,3)-->
+        <where>
+            <!--separator : 隔点 ，用来分隔集合数据的 -->
+            <foreach collection="list" open="u.id in (" separator="," close=")" item="id">
+                <!--此时#{}中的id是 item属性中的名称 -->
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
+    <!--数组-->
+    <select id="getUsersByArrId" resultType="UmsUser">
+        SELECT
+        <include refid="Base_UmsUser_Column"/>
+        from ums_user u
+        <!--<foreach collection> 用来接收集合数据的 list array 或者拼接  (2,3)-->
+        <where>
+            <!--separator : 隔点 ，用来分隔集合数据的 -->
+            <foreach collection="array" open="u.id in (" separator="," close=")" item="id">
+                <!--此时#{}中的id是 item属性中的名称 -->
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
+    <!--包装类获取集合元素 -->
+    <select id="getUsersByQueryVo1" resultType="UmsUser" parameterType="QueryVo">
+        SELECT
+        <include refid="Base_UmsUser_Column"/>
+        from ums_user u
+        <!--<foreach collection> 用来接收集合数据的 list array 或者拼接  (2,3)-->
+        <where>
+            <!--separator : 隔点 ，用来分隔集合数据的 -->
+            <foreach collection="ids" open="u.id in (" separator="," close=")" item="id">
+                <!--此时#{}中的id是 item属性中的名称 -->
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
+    <resultMap id="Base_UserInOrder_Map" type="UmsUser">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="username" property="username"></result>
+        <!--获取实体对象中集合的信息 <collection>也不再自动映射封装了，必须显示的写出映射-->
+        <collection property="orderList" ofType="Order">
+            <id column="oid" property="oid" ></id>
+            <result column="total_amount" property="totalAmount"></result>
+            <result column="ono" property="ono"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getUserListInOrders" resultMap="Base_UserInOrder_Map">
+        select uu.name ,uu.id  , oo.oid , oo.ono , oo.total_amount
+        from ums_user uu LEFT JOIN oms_order oo  ON oo.user_id = uu.id
+    </select>
 </mapper>
